@@ -360,15 +360,20 @@ export class Matchmaker {
         const koaServer = new Koa();
         const router = new KoaRouter();
 
-        koaServer.use(cors({
-            origin: [
-                "https://raw.githack.com",
-                "https://ultron-amonguswaterway.onrender.com"
-            ],
-            credentials: true,
-            allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            allowHeaders: ["Content-Type", "Authorization"]
-        }));
+        koaServer.use(async (ctx, next) => {
+    ctx.set("Access-Control-Allow-Origin", ctx.headers.origin || "*");
+    ctx.set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    ctx.set("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    ctx.set("Access-Control-Allow-Credentials", "true");
+    ctx.set("Vary", "Origin");
+
+    if (ctx.method === "OPTIONS") {
+        ctx.status = 204;
+        return;
+    }
+
+    await next();
+});
 
         koaServer.use(koaBody());
 
