@@ -753,12 +753,12 @@ export class Matchmaker {
         });
 
         // Endpoints para "Classic Us"
-        router.get("/api/lobbies", ctx => {
+        router.all("/api/lobbies", ctx => {
             ctx.status = 200;
             ctx.body = { lobbies: [] };
         });
 
-        router.get("/account/auto", ctx => {
+        router.all("/account/auto", ctx => {
             ctx.status = 200;
             ctx.body = {
                 username: "Player",
