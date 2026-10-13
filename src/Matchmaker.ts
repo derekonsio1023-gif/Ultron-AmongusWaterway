@@ -355,18 +355,28 @@ export class Matchmaker {
         return gameListing;
     }
 
-    protected createKoaServer() {
-        const koaServer = new Koa;
-        koaServer.use(koaBody());
+    import * as Koa from "koa";
+import * as cors from "@koa/cors";
+// ... otras importaciones
 
-        const router = new KoaRouter;
-        for (const [, loadedPlugin] of this.server.loadedPlugins) {
-            for (let i = 0; i < loadedPlugin.loadedMatchmakerEndpoints.length; i++) {
-                const { method, route, body } = loadedPlugin.loadedMatchmakerEndpoints[i];
+private createKoaServer(): Koa {
+    const app = new Koa();
 
-                router[method](route, body.bind(loadedPlugin.pluginInstance) as any);
-            }
-        }
+    // Añade CORS aquí, ANTES de las rutas
+    app.use(cors({
+        origin: [
+            "https://raw.githack.com",
+            "https://ultron-amonguswaterway.onrender.com"
+        ],
+        credentials: true,
+        allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowHeaders: ["Content-Type", "Authorization"]
+    }));
+
+    // ... el resto de middlewares y rutas (koaBody, router, etc.)
+
+    return app;
+}
 
         router.post("/api/user", async (ctx) => {
             const body = (ctx.request as any).body;
