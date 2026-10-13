@@ -1,6 +1,5 @@
 import * as chalk from "chalk";
 import * as Koa from "koa";
-import * as cors from "@koa/cors";
 import koaBody from "koa-body";
 import * as http from "http";
 import * as crypto from "crypto";
