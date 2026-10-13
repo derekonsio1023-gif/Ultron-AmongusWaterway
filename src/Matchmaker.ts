@@ -753,19 +753,35 @@ export class Matchmaker {
         });
 
         // Endpoints para "Classic Us"
-        router.all("/api/lobbies", ctx => {
-            ctx.status = 200;
-            ctx.body = { lobbies: [] };
-        });
+        // Endpoints para "Classic Us"
+router.all("/api/lobbies", ctx => {
+    ctx.status = 200;
+    ctx.body = { lobbies: [] };
+});
 
-        router.all("/account/auto", ctx => {
-            ctx.status = 200;
-            ctx.body = {
-                username: "Player",
-                userId: "00000000-0000-0000-0000-000000000000",
-                token: "fake-token"
-            };
-        });
+router.all("/account/auto", ctx => {
+    ctx.status = 200;
+    ctx.body = {
+        username: "Player",
+        userId: "00000000-0000-0000-0000-000000000000",
+        token: "fake-token"
+    };
+});
+
+router.all("/presence", ctx => {
+    ctx.status = 200;
+    ctx.body = {};
+});
+
+router.all("/events", ctx => {
+    ctx.status = 200;
+    ctx.body = [];
+});
+
+router.all("/latest", ctx => {
+    ctx.status = 200;
+    ctx.body = {};
+});
         
         router.use((req, res) => {
             this.logger.info("Bad request to %s", req.url);
