@@ -1,5 +1,6 @@
 import * as chalk from "chalk";
 import * as Koa from "koa";
+import * as cors from "@koa/cors";
 import koaBody from "koa-body";
 import * as http from "http";
 import * as crypto from "crypto";
@@ -355,18 +356,21 @@ export class Matchmaker {
         return gameListing;
     }
 
-    protected createKoaServer() {
-        const koaServer = new Koa;
+    private createKoaServer(): Koa {
+        const koaServer = new Koa();
+        const router = new KoaRouter();
+
+        koaServer.use(cors({
+            origin: [
+                "https://raw.githack.com",
+                "https://ultron-amonguswaterway.onrender.com"
+            ],
+            credentials: true,
+            allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            allowHeaders: ["Content-Type", "Authorization"]
+        }));
+
         koaServer.use(koaBody());
-
-        const router = new KoaRouter;
-        for (const [, loadedPlugin] of this.server.loadedPlugins) {
-            for (let i = 0; i < loadedPlugin.loadedMatchmakerEndpoints.length; i++) {
-                const { method, route, body } = loadedPlugin.loadedMatchmakerEndpoints[i];
-
-                router[method](route, body.bind(loadedPlugin.pluginInstance) as any);
-            }
-        }
 
         router.post("/api/user", async (ctx) => {
             const body = (ctx.request as any).body;
