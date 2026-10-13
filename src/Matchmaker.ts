@@ -456,7 +456,7 @@ export class Matchmaker {
             };
         });
 
-        ("/api/games/filtered", ctx => {
+        router.get("/api/games/filtered", ctx => {
             if (!this.verifyRequest(ctx)) {
                 ctx.status = 401;
                 return;
@@ -712,32 +712,26 @@ export class Matchmaker {
             };
         });
 
-            router.get("/api/games/:game_id", ctx => {
-        // ... código existente ...
-    });
+        router.get("/api/filtertags", ctx => {
+            // TODO: when does this get called?
+            ctx.status = 200;
+            ctx.body = [];
+        });
 
-    // --- ENDPOINTS AÑADIDOS PARA "CLASSIC US" ---
-    router.get("/api/lobbies", ctx => {
-        ctx.status = 200;
-        ctx.body = { lobbies: [] };
-    });
-
-    router.get("/account/auto", ctx => {
-        ctx.status = 200;
-        ctx.body = {
-            username: "Player",
-            userId: "00000000-0000-0000-0000-000000000000",
-            token: "fake-token"
-        };
-    });
-    // --- FIN DE LOS ENDPOINTS AÑADIDOS ---
-
-    router.use((req, res) => {
-        this.logger.info("Bad request to %s", req.url);
-    });
-    koaServer.use(router.routes());
-    return koaServer;
-}
+        router.get("/api/games/:game_id", ctx => {
+            const gameCode = parseInt(ctx.params.game_id);
+            const foundRoom = this.server.rooms.get(gameCode);
+            if (!foundRoom) {
+                this.logger.info("Client failed to find room, game not found: %s", new RoomCode(gameCode));
+                ctx.status = 404;
+                ctx.body = {
+                    Errors: [{ Reason: DisconnectReason[DisconnectReason.GameNotFound] }],
+                    Game: null,
+                    Region: StringName.NoTranslation,
+                    UntranslatedRegion: this.server.config.clusterName,
+                } as GameFoundByCodeJson;
+                return;
+            }
 
             this.logger.info("Client found room: %s", foundRoom);
 
@@ -750,6 +744,21 @@ export class Matchmaker {
             } as GameFoundByCodeJson;
         });
 
+        // Endpoints para "Classic Us"
+        router.get("/api/lobbies", ctx => {
+            ctx.status = 200;
+            ctx.body = { lobbies: [] };
+        });
+
+        router.get("/account/auto", ctx => {
+            ctx.status = 200;
+            ctx.body = {
+                username: "Player",
+                userId: "00000000-0000-0000-0000-000000000000",
+                token: "fake-token"
+            };
+        });
+        
         router.use((req, res) => {
             this.logger.info("Bad request to %s", req.url);
         });
